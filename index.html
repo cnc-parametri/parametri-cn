@@ -1,0 +1,279 @@
+
+
+```html
+
+<!DOCTYPE html>
+
+<html lang="it">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Parametri CNC</title>
+
+<style>
+
+body{font-family:Arial,sans-serif;background:#101827;color:#f1f5f9;margin:0;padding:16px}
+
+h1{color:#38bdf8;text-align:center}
+
+.card{background:#1e293b;padding:16px;border-radius:12px;margin-bottom:15px}
+
+label{display:block;margin-top:12px;font-size:14px}
+
+select,input{width:100%;box-sizing:border-box;padding:12px;margin-top:5px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:white;font-size:16px}
+
+button{width:100%;padding:14px;background:#0284c7;color:white;border:0;border-radius:9px;font-size:17px;margin-top:18px}
+
+.result{font-size:18px;line-height:1.7}
+
+small{color:#94a3b8}
+
+</style>
+
+</head>
+
+<body>
+
+
+<h1>⚙️ PARAMETRI CNC</h1>
+
+
+<div class="card">
+
+
+<label>Materiale</label>
+
+<select id="mat">
+
+<option value="al">Alluminio</option>
+
+<option value="steel">Acciaio</option>
+
+<option value="303">AISI 303</option>
+
+<option value="304">AISI 304</option>
+
+<option value="ti">Titanio</option>
+
+<option value="inconel">Inconel</option>
+
+</select>
+
+
+<label>Utensile</label>
+
+<select id="tool">
+
+<option value="mill">Fresa</option>
+
+<option value="drill">Punta</option>
+
+<option value="tap">Maschio</option>
+
+<option value="thread">Fresa a filettare</option>
+
+<option value="center">Centrino</option>
+
+<option value="chamfer">Smussatore</option>
+
+</select>
+
+
+<label>Diametro utensile (mm)</label>
+
+<input type="number" id="d" value="10" step="0.1">
+
+
+<label>Numero taglienti</label>
+
+<input type="number" id="z" value="4" min="1">
+
+
+<label>Passo filetto (mm) - maschio/filettatura</label>
+
+<input type="number" id="pitch" value="1.5" step="0.1">
+
+
+<button onclick="calc()">CALCOLA PARAMETRI</button>
+
+</div>
+
+
+<div class="card result" id="out">
+
+Inserisci i dati e premi CALCOLA.
+
+</div>
+
+
+<div class="card">
+
+<small>
+
+Valori indicativi per utensili in metallo duro integrale.
+
+I parametri reali dipendono da macchina, refrigerazione,
+
+rigidità, geometria utensile, lavorazione e condizioni del pezzo.
+
+Verificare sempre con il produttore dell'utensile.
+
+</small>
+
+</div>
+
+
+<script>
+
+function calc(){
+
+
+let mat=document.getElementById("mat").value;
+
+let tool=document.getElementById("tool").value;
+
+let D=parseFloat(document.getElementById("d").value);
+
+let Z=parseInt(document.getElementById("z").value);
+
+let P=parseFloat(document.getElementById("pitch").value);
+
+
+if(!D||D<=0||!Z||Z<=0){
+
+document.getElementById("out").innerHTML="Inserire diametro e taglienti validi.";
+
+return;
+
+}
+
+
+let Vc,fz,fn,ae,ap;
+
+
+let data={
+
+al:[300,0.06,0.10,0.35,1.0],
+
+steel:[150,0.04,0.08,0.25,0.5],
+
+303:[130,0.035,0.07,0.20,0.4],
+
+304:[100,0.03,0.06,0.15,0.35],
+
+ti:[70,0.025,0.05,0.12,0.25],
+
+inconel:[40,0.02,0.04,0.10,0.2]
+
+};
+
+
+[Vc,fz,fn,ae,ap]=data[mat];
+
+
+if(tool==="drill"){
+
+Vc=Vc*0.55;
+
+fn=fn*0.6;
+
+}
+
+
+if(tool==="tap"){
+
+Vc={
+
+al:25,steel:12,303:10,304:8,ti:6,inconel:4
+
+}[mat];
+
+}
+
+
+if(tool==="center"){
+
+Vc=Vc*0.4;
+
+fn=0.03;
+
+}
+
+
+if(tool==="chamfer"){
+
+Vc=Vc*0.5;
+
+fz=fz*0.5;
+
+}
+
+
+if(tool==="thread"){
+
+Vc=Vc*0.6;
+
+fz=fz*0.6;
+
+}
+
+
+let rpm=Math.round((Vc*1000)/(Math.PI*D));
+
+let feed;
+
+
+if(tool==="tap"){
+
+feed=Math.round(rpm*P);
+
+}else if(tool==="drill"||tool==="center"){
+
+feed=Math.round(rpm*fn);
+
+}else{
+
+feed=Math.round(rpm*fz*Z);
+
+}
+
+
+let radial=D*ae;
+
+let axial=D*ap;
+
+
+document.getElementById("out").innerHTML=
+
+"<b>Velocità di taglio:</b> "+Vc+" m/min<br>"+
+
+"<b>Giri mandrino:</b> "+rpm+" RPM<br>"+
+
+"<b>Avanzamento:</b> "+feed+" mm/min<br>"+
+
+"<b>Passata radiale indicativa:</b> "+radial.toFixed(2)+" mm<br>"+
+
+[20/11, 22:53] ChatGPT: "<b>Passata assiale indicativa:</b> "+axial.toFixed(2)+" mm<br>"+
+
+"<hr>"+
+
+"<small>Per maschi: avanzamento sincronizzato con il passo.<br>"+
+
+"Per punte: avanzamento espresso in mm/min.<br>"+
+
+"Per fresatura: avanzamento calcolato con fz e numero taglienti.</small>";
+
+}
+
+</script>
+
+
+</body>
+
+</html>
+
+```
