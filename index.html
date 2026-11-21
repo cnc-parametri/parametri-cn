@@ -1,538 +1,470 @@
 <!DOCTYPE html>
-
 <html lang="it">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta name="theme-color" content="#101827">
 <title>Parametri CNC</title>
 
-
 <style>
+* {box-sizing:border-box}
 
 body {
-
-  font-family:Arial,sans-serif;
-
-  background:#101827;
-
-  color:#f1f5f9;
-
-  margin:0;
-
-  padding:16px;
-
+  font-family:Arial,sans-serif;
+  background:#101827;
+  color:#f1f5f9;
+  margin:0;
+  padding:16px;
 }
 
 h1 {
-
-  color:#38bdf8;
-
-  text-align:center;
-
-  font-size:24px;
-
+  color:#38bdf8;
+  text-align:center;
+  font-size:25px;
+  margin:12px 0 20px;
 }
 
 .card {
-
-  background:#1e293b;
-
-  padding:16px;
-
-  border-radius:12px;
-
-  margin-bottom:15px;
-
+  background:#1e293b;
+  padding:18px;
+  border-radius:14px;
+  margin-bottom:16px;
+  border:1px solid #334155;
 }
 
 label {
-
-  display:block;
-
-  margin-top:12px;
-
+  display:block;
+  margin-top:14px;
+  font-size:15px;
+  font-weight:bold;
 }
 
 select,input {
+  display:block;
+  width:100%;
+  padding:13px;
+  margin-top:6px;
+  border-radius:9px;
+  background:#0f172a;
+  color:white;
+  border:1px solid #475569;
+  font-size:17px;
+}
 
-  width:100%;
-
-  box-sizing:border-box;
-
-  padding:12px;
-
-  margin-top:5px;
-
-  border-radius:8px;
-
-  background:#0f172a;
-
-  color:white;
-
-  border:1px solid #475569;
-
-  font-size:16px;
-
+select:focus,input:focus {
+  outline:2px solid #38bdf8;
+  border-color:#38bdf8;
 }
 
 button {
+  width:100%;
+  padding:16px;
+  background:#0284c7;
+  color:white;
+  border:0;
+  border-radius:10px;
+  font-size:18px;
+  font-weight:bold;
+  margin-top:20px;
+}
 
-  width:100%;
-
-  padding:15px;
-
-  background:#0284c7;
-
-  color:white;
-
-  border:0;
-
-  border-radius:9px;
-
-  font-size:18px;
-
-  margin-top:15px;
-
+button:active {
+  background:#0369a1;
 }
 
 .result {
+  font-size:17px;
+  line-height:1.9;
+}
 
-  font-size:18px;
+.result h2 {
+  color:#38bdf8;
+  font-size:20px;
+}
 
-  line-height:1.8;
-
+.result strong {
+  color:#7dd3fc;
 }
 
 small {
-
-  color:#94a3b8;
-
+  color:#94a3b8;
+  line-height:1.5;
 }
 
+.hidden {
+  display:none !important;
+}
+
+.hint {
+  font-size:12px;
+  color:#38bdf8;
+  margin-top:5px;
+}
+
+.value {
+  color:#38bdf8;
+  font-weight:bold;
+}
+
+hr {
+  border:0;
+  border-top:1px solid #475569;
+  margin:14px 0;
+}
 </style>
-
 </head>
-
 
 <body>
 
-
 <h1>⚙️ PARAMETRI CNC</h1>
-
 
 <div class="card">
 
-
 <label>Materiale</label>
-
 <select id="mat">
-
 <option value="al">Alluminio</option>
-
 <option value="steel">Acciaio</option>
-
 <option value="303">AISI 303</option>
-
 <option value="304">AISI 304</option>
-
 <option value="ti">Titanio</option>
-
 <option value="inconel">Inconel</option>
-
 </select>
-
 
 <label>Utensile</label>
-
 <select id="tool">
-
 <option value="mill">Fresa</option>
-
 <option value="drill">Punta</option>
-
 <option value="tap">Maschio</option>
-
 <option value="thread">Fresa a filettare</option>
-
 <option value="center">Centrino</option>
-
 <option value="chamfer">Smussatore</option>
-
 </select>
 
-
 <label>Diametro utensile (mm)</label>
+<input id="d" type="number" value="10" min="0.1" step="0.1">
 
-<input id="d" type="number" value="10" step="0.1">
-
-
+<div id="zBox">
 <label>Numero taglienti</label>
+<input id="z" type="number" value="4" min="1" step="1">
+</div>
 
-<input id="z" type="number" value="4" min="1">
-
-
-<label>Passo filetto (mm)</label>
-
-<input id="pitch" type="number" value="1.5" step="0.1">
-
+<div id="pitchBox" class="hidden">
+<label>Passo filetto maschio (mm)</label>
+<input id="pitch" type="number" value="1.5" min="0.1" step="0.1">
+</div>
 
 <label>Velocità di taglio Vc (m/min)</label>
+<input id="vc" type="number" step="1">
 
-<input id="vc" type="number" value="300">
-
-
+<div id="fzBox">
 <label>Avanzamento per tagliente fz (mm)</label>
+<input id="fz" type="number" step="0.001">
+</div>
 
-<input id="fz" type="number" value="0.06" step="0.001">
+<div id="aeBox">
+<label>Impegno radiale (mm)</label>
+<input id="ae" type="number" min="0.01" step="0.1">
+<div class="hint" id="aePercent"></div>
+</div>
 
-
-<label>Passata radiale (% diametro)</label>
-
-<input id="ae" type="number" value="35">
-
-
-<label>Passata assiale (% diametro)</label>
-
-<input id="ap" type="number" value="100">
-
+<div id="apBox">
+<label>Impegno assiale (mm)</label>
+<input id="ap" type="number" min="0.01" step="0.1">
+<div class="hint" id="apPercent"></div>
+</div>
 
 <button onclick="calc()">AGGIORNA E CALCOLA</button>
 
-
 </div>
-
 
 <div class="card result" id="out">
-
+<h2>Risultati lavorazione</h2>
 Inserisci i dati e premi AGGIORNA.
-
 </div>
-
 
 <div class="card">
-
 <small>
-
-Impostazioni salvate automaticamente sul dispositivo.
-
 Parametri indicativi per utensili in metallo duro.
-
-Verificare sempre i valori con il produttore dell'utensile.
-
+I valori effettivi dipendono da geometria dell'utensile,
+grado del metallo duro, macchina, rigidità, refrigerazione
+e condizioni di lavorazione. Verificare sempre con il
+produttore dell'utensile.
 </small>
-
 </div>
-
 
 <script>
 
-
-const dati={
-
-al:{vc:300,fz:0.06,ae:35,ap:100,dr:0.15,tap:25},
-
-steel:{vc:150,fz:0.04,ae:25,ap:50,dr:0.12,tap:12},
-
-"303":{vc:130,fz:0.035,ae:20,ap:40,dr:0.10,tap:10},
-
-"304":{vc:100,fz:0.03,ae:15,ap:35,dr:0.08,tap:8},
-
-ti:{vc:70,fz:0.025,ae:12,ap:25,dr:0.06,tap:6},
-
-inconel:{vc:40,fz:0.02,ae:10,ap:20,dr:0.05,tap:4}
-
+const dati = {
+al: {
+vc:300,fz:0.06,ae:35,ap:100,dr:0.15,tap:25
+},
+steel: {
+vc:150,fz:0.04,ae:25,ap:50,dr:0.12,tap:12
+},
+"303": {
+vc:130,fz:0.035,ae:20,ap:40,dr:0.10,tap:10
+},
+"304": {
+vc:100,fz:0.03,ae:15,ap:35,dr:0.08,tap:8
+},
+ti: {
+vc:70,fz:0.025,ae:12,ap:25,dr:0.06,tap:6
+},
+inconel: {
+vc:40,fz:0.02,ae:10,ap:20,dr:0.05,tap:4
+}
 };
 
+const ids=[
+"mat","tool","d","z","pitch","vc","fz","ae","ap"
+];
 
-const ids=["mat","tool","d","z","pitch","vc","fz","ae","ap"];
-
+function $(id){
+return document.getElementById(id);
+}
 
 function salva(){
-
-
 try{
-
-const datiSalvati={};
-
-
-ids.forEach(id=>{
-
-datiSalvati[id]=document.getElementById(id).value;
-
-});
-
-
-localStorage.setItem("parametriCNC",JSON.stringify(datiSalvati));
-
-
+const obj={};
+ids.forEach(id=>obj[id]=$(id).value);
+localStorage.setItem("parametriCNC",JSON.stringify(obj));
 }catch(e){}
-
-
 }
-
 
 function carica(){
-
-
 try{
-
-
-const salvati=JSON.parse(localStorage.getItem("parametriCNC"));
-
-
-if(salvati){
-
-
+const obj=JSON.parse(localStorage.getItem("parametriCNC"));
+if(obj){
 ids.forEach(id=>{
-
-if(salvati[id]!==undefined){
-
-document.getElementById(id).value=salvati[id];
-
-}
-
+if(obj[id]!==undefined) $(id).value=obj[id];
 });
-
-
 }else{
-
-aggiornaMateriale();
-
+aggiornaValori();
 }
-
-
 }catch(e){
-
-aggiornaMateriale();
-
+aggiornaValori();
+}
 }
 
+function velocitaConsigliata(){
+const m=dati[$("mat").value];
+const t=$("tool").value;
 
+if(t==="tap") return m.tap;
+if(t==="drill") return m.vc*0.55;
+if(t==="center") return m.vc*0.4;
+if(t==="thread") return m.vc*0.6;
+if(t==="chamfer") return m.vc*0.5;
+
+return m.vc;
 }
 
+function aggiornaValori(){
 
-function aggiornaMateriale(){
+const m=dati[$("mat").value];
+const D=parseFloat($("d").value)||10;
+const t=$("tool").value;
 
+$("vc").value=velocitaConsigliata();
 
-const m=dati[document.getElementById("mat").value];
+$("fz").value=m.fz;
 
+$("ae").value=(D*m.ae/100).toFixed(2);
+$("ap").value=(D*m.ap/100).toFixed(2);
 
-document.getElementById("vc").value=m.vc;
-
-document.getElementById("fz").value=m.fz;
-
-document.getElementById("ae").value=m.ae;
-
-document.getElementById("ap").value=m.ap;
-
-
+aggiornaInterfaccia();
 salva();
-
-
 }
 
+function aggiornaInterfaccia(){
 
-document.getElementById("mat").addEventListener("change",aggiornaMateriale);
+const t=$("tool").value;
 
+$("pitchBox").classList.toggle("hidden",t!=="tap");
 
-ids.forEach(id=>{
+const taglienti=["mill","thread","chamfer"].includes(t);
 
-document.getElementById(id).addEventListener("input",salva);
+$("zBox").classList.toggle("hidden",!taglienti);
+$("fzBox").classList.toggle("hidden",!taglienti);
 
-document.getElementById(id).addEventListener("change",salva);
+const passate=["mill","thread","chamfer"].includes(t);
 
-});
+$("aeBox").classList.toggle("hidden",!passate);
+$("apBox").classList.toggle("hidden",!passate);
 
+aggiornaPercentuali();
+}
+
+function aggiornaPercentuali(){
+
+const D=parseFloat($("d").value);
+const ae=parseFloat($("ae").value);
+const ap=parseFloat($("ap").value);
+
+if(D>0 && ae>=0){
+$("aePercent").textContent=
+"Equivale al "+(ae/D*100).toFixed(1)+"% del diametro";
+}
+
+if(D>0 && ap>=0){
+$("apPercent").textContent=
+"Equivale al "+(ap/D*100).toFixed(1)+"% del diametro";
+}
+
+}
 
 function calc(){
 
+const mat=$("mat").value;
+const tool=$("tool").value;
 
-const mat=document.getElementById("mat").value;
+const D=parseFloat($("d").value);
+const Z=parseInt($("z").value);
+const P=parseFloat($("pitch").value);
 
-const tool=document.getElementById("tool").value;
+let Vc=parseFloat($("vc").value);
+let fz=parseFloat($("fz").value);
 
-const D=parseFloat(document.getElementById("d").value);
-
-const Z=parseInt(document.getElementById("z").value);
-
-const P=parseFloat(document.getElementById("pitch").value);
-
-const out=document.getElementById("out");
-
-
-let Vc=parseFloat(document.getElementById("vc").value);
-
-let fz=parseFloat(document.getElementById("fz").value);
-
-let ae=parseFloat(document.getElementById("ae").value)/100;
-
-let ap=parseFloat(document.getElementById("ap").value)/100;
-
-
-if(!D||D<=0||!Z||Z<=0||!Vc||Vc<=0){
-
-out.innerHTML="Errore: controllare diametro, taglienti e Vc.";
-
-return;
-
-}
-
-
-if(tool==="tap"&&(!P||P<=0)){
-
-out.innerHTML="Inserire un passo filetto valido.";
-
-return;
-
-}
-
-
-if(!Number.isFinite(fz)||fz<=0||
-
-!Number.isFinite(ae)||ae<=0||
-
-!Number.isFinite(ap)||ap<=0){
-
-out.innerHTML="Controllare fz e passate.";
-
-return;
-
-}
-
+const ae=parseFloat($("ae").value);
+const ap=parseFloat($("ap").value);
 
 const m=dati[mat];
+const out=$("out");
 
+const taglienti=["mill","thread","chamfer"].includes(tool);
+const passate=["mill","thread","chamfer"].includes(tool);
 
-let rpm=0;
+if(!Number.isFinite(D)||D<=0){
+out.innerHTML="Errore: inserire un diametro valido.";
+return;
+}
 
-let feed=0;
+if(!Number.isFinite(Vc)||Vc<=0){
+out.innerHTML="Errore: inserire una Vc valida.";
+return;
+}
 
-let note="";
+if(taglienti && (!Number.isInteger(Z)||Z<1)){
+out.innerHTML="Errore: inserire il numero di taglienti.";
+return;
+}
 
+if(taglienti && (!Number.isFinite(fz)||fz<=0)){
+out.innerHTML="Errore: inserire un fz valido.";
+return;
+}
 
-if(tool==="drill"){
+if(tool==="tap"&&(!Number.isFinite(P)||P<=0)){
+out.innerHTML="Errore: inserire il passo del maschio.";
+return;
+}
 
+if(passate&&(!Number.isFinite(ae)||ae<=0||!Number.isFinite(ap)||ap<=0)){
+out.innerHTML="Errore: inserire impegni radiale e assiale validi.";
+return;
+}
 
-Vc*=0.55;
+let rpm;
+let feed;
+let descrizione="";
+
+if(tool==="tap"){
 
 rpm=Math.round(1000*Vc/(Math.PI*D));
+feed=rpm*P;
+descrizione="Avanzamento sincronizzato con il passo del maschio.";
 
-feed=Math.round(rpm*m.dr);
-
-note="Avanzamento in mm/min.";
-
-
-}else if(tool==="tap"){
-
-
-Vc=m.tap;
+}else if(tool==="drill"){
 
 rpm=Math.round(1000*Vc/(Math.PI*D));
-
-feed=Math.round(rpm*P);
-
-note="Avanzamento sincronizzato: RPM × passo.";
-
+feed=rpm*m.dr;
+descrizione="Avanzamento punta in mm/min.";
 
 }else if(tool==="center"){
 
-
-Vc*=0.4;
-
 rpm=Math.round(1000*Vc/(Math.PI*D));
-
-feed=Math.round(rpm*0.03);
-
-note="Avanzamento indicativo per centrino.";
-
+feed=rpm*0.03;
+descrizione="Avanzamento indicativo centrino.";
 
 }else{
 
-
-if(tool==="thread"){
-
-Vc*=0.6;
-
-fz*=0.6;
-
-}
-
-
-if(tool==="chamfer"){
-
-Vc*=0.5;
-
-fz*=0.5;
-
-}
-
-
 rpm=Math.round(1000*Vc/(Math.PI*D));
 
-feed=Math.round(rpm*fz*Z);
+if(tool==="thread") fz*=0.6;
+if(tool==="chamfer") fz*=0.5;
 
-
-note="Avanzamento calcolato con fz × taglienti.";
-
-
-}
-
-
-const radiale=D*ae;
-
-const assiale=D*ap;
-
-
-let html=
-
-"<b>Materiale:</b> "+document.getElementById("mat").selectedOptions[0].text+"<br>"+
-
-"<b>Utensile:</b> "+document.getElementById("tool").selectedOptions[0].text+"<br>"+
-
-"<b>Vc:</b> "+Vc.toFixed(1)+" m/min<br>"+
-
-"<b>Giri mandrino:</b> "+rpm+" RPM<br>"+
-
-"<b>Avanzamento:</b> "+feed+" mm/min<br>";
-
-
-if(tool!=="drill"&&tool!=="tap"&&tool!=="center"){
-
-
-html+=
-
-"<b>fz:</b> "+fz.toFixed(3)+" mm/tagliente<br>"+
-
-"<b>Passata radiale:</b> "+radiale.toFixed(2)+" mm<br>"+
-
-"<b>Passata assiale:</b> "+assiale.toFixed(2)+" mm<br>";
-
+feed=rpm*fz*Z;
+descrizione="Avanzamento calcolato con fz × taglienti.";
 
 }
 
+const vcEffettiva=(Math.PI*D*rpm)/1000;
 
-html+="<hr><small>"+note+"</small>";
+let html=`
+<h2>RISULTATI LAVORAZIONE</h2>
+<strong>Materiale:</strong> ${$("mat").selectedOptions[0].text}<br>
+<strong>Utensile:</strong> ${$("tool").selectedOptions[0].text}<br>
+<hr>
+<strong>Velocità di taglio:</strong> ${vcEffettiva.toFixed(1)} m/min<br>
+<strong>Giri mandrino:</strong> <span class="value">${rpm} RPM</span><br>
+<strong>Avanzamento:</strong> <span class="value">${feed.toFixed(1)} mm/min</span><br>
+`;
 
+if(tool==="tap"){
+html+=`
+<strong>Passo filetto:</strong> ${P} mm<br>
+<strong>Avanzamento per giro:</strong> ${P} mm/giro<br>
+`;
+}
+
+if(taglienti){
+html+=`
+<hr>
+<strong>fz effettivo:</strong> ${fz.toFixed(3)} mm/tagliente<br>
+<strong>Numero taglienti:</strong> ${Z}<br>
+`;
+}
+
+if(passate){
+html+=`
+<hr>
+<strong>Impegno radiale:</strong> ${ae.toFixed(2)} mm (${(ae/D*100).toFixed(1)}%)<br>
+<strong>Impegno assiale:</strong> ${ap.toFixed(2)} mm (${(ap/D*100).toFixed(1)}%)<br>
+`;
+
+if(ae>D*0.5){
+html+=`<small>Attenzione: impegno radiale elevato.</small><br>`;
+}
+}
+
+html+=`
+<hr>
+<small>${descrizione}</small>
+`;
 
 out.innerHTML=html;
 
-
 salva();
-
 
 }
 
+$("mat").addEventListener("change",aggiornaValori);
+
+$("tool").addEventListener("change",function(){
+aggiornaValori();
+});
+
+$("d").addEventListener("input",aggiornaPercentuali);
+
+ids.forEach(id=>{
+$(id).addEventListener("input",salva);
+$(id).addEventListener("change",salva);
+});
 
 carica();
-
+aggiornaInterfaccia();
 
 </script>
 
-
 </body>
-
 </html>
