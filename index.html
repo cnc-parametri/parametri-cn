@@ -1,269 +1,481 @@
 
+
 <!DOCTYPE html>
+
 <html lang="it">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Parametri CNC</title>
 
+
 <style>
+
 body {
-  font-family: Arial, sans-serif;
-  background: #101827;
-  color: #f1f5f9;
-  margin: 0;
-  padding: 16px;
+
+  font-family: Arial, sans-serif;
+
+  background: #101827;
+
+  color: #f1f5f9;
+
+  margin: 0;
+
+  padding: 16px;
+
 }
+
 h1 {
-  color:#38bdf8;
-  text-align:center;
-  font-size:24px;
+
+  color:#38bdf8;
+
+  text-align:center;
+
+  font-size:24px;
+
 }
+
 .card {
-  background:#1e293b;
-  padding:16px;
-  border-radius:12px;
-  margin-bottom:15px;
+
+  background:#1e293b;
+
+  padding:16px;
+
+  border-radius:12px;
+
+  margin-bottom:15px;
+
 }
+
 label {display:block;margin-top:12px}
+
 select,input {
-  width:100%;
-  box-sizing:border-box;
-  padding:12px;
-  margin-top:5px;
-  border-radius:8px;
-  background:#0f172a;
-  color:white;
-  border:1px solid #475569;
-  font-size:16px;
+
+  width:100%;
+
+  box-sizing:border-box;
+
+  padding:12px;
+
+  margin-top:5px;
+
+  border-radius:8px;
+
+  background:#0f172a;
+
+  color:white;
+
+  border:1px solid #475569;
+
+  font-size:16px;
+
 }
+
 button {
-  width:100%;
-  padding:15px;
-  background:#0284c7;
-  color:white;
-  border:0;
-  border-radius:9px;
-  font-size:18px;
-  margin-top:15px;
+
+  width:100%;
+
+  padding:15px;
+
+  background:#0284c7;
+
+  color:white;
+
+  border:0;
+
+  border-radius:9px;
+
+  font-size:18px;
+
+  margin-top:15px;
+
 }
+
 .result {
-  font-size:18px;
-  line-height:1.8;
+
+  font-size:18px;
+
+  line-height:1.8;
+
 }
+
 small {color:#94a3b8}
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <h1>⚙️ PARAMETRI CNC</h1>
 
+
 <div class="card">
+
 
 <label>Materiale</label>
+
 <select id="mat">
+
 <option value="al">Alluminio</option>
+
 <option value="steel">Acciaio</option>
+
 <option value="303">AISI 303</option>
+
 <option value="304">AISI 304</option>
+
 <option value="ti">Titanio</option>
+
 <option value="inconel">Inconel</option>
+
 </select>
+
 
 <label>Utensile</label>
+
 <select id="tool">
+
 <option value="mill">Fresa</option>
+
 <option value="drill">Punta</option>
+
 <option value="tap">Maschio</option>
+
 <option value="thread">Fresa a filettare</option>
+
 <option value="center">Centrino</option>
+
 <option value="chamfer">Smussatore</option>
+
 </select>
 
+
 <label>Diametro utensile (mm)</label>
+
 <input id="d" type="number" value="10" step="0.1">
 
+
 <label>Numero taglienti</label>
+
 <input id="z" type="number" value="4" min="1">
 
+
 <label>Passo filetto (mm)</label>
+
 <input id="pitch" type="number" value="1.5" step="0.1">
 
+
 <label>Velocità di taglio Vc (m/min)</label>
+
 <input id="vc" type="number" step="1">
 
+
 <label>Avanzamento per tagliente fz (mm)</label>
+
 <input id="fz" type="number" step="0.001">
 
+
 <label>Passata radiale (% diametro)</label>
+
 <input id="ae" type="number" step="1">
 
+
 <label>Passata assiale (% diametro)</label>
+
 <input id="ap" type="number" step="1">
 
+
 <button onclick="calc()">CALCOLA PARAMETRI</button>
+
 <button onclick="copyResult()">COPIA RISULTATI</button>
 
+
 </div>
+
 
 <div class="card result" id="out">
+
 Inserisci i dati e premi CALCOLA.
+
 </div>
 
+
 <div class="card">
+
 <small>
+
+Parametri indicativi per utensili in metallo duro.
+
+Verificare sempre con il produttore dell'utensile.
+
+I valori dipendono da geometria, macchina, rigidità,
+
+refrigerazione e condizioni di lavorazione.
+
 </small>
+
 </div>
+
 
 <script>
 
+
 const dati={
-al:      {vc:300,fz:0.06,ae:35,ap:100,dr:0.15,tap:25},
-steel:   {vc:150,fz:0.04,ae:25,ap:50,dr:0.12,tap:12},
-"303":   {vc:130,fz:0.035,ae:20,ap:40,dr:0.10,tap:10},
-"304":   {vc:100,fz:0.03,ae:15,ap:35,dr:0.08,tap:8},
-ti:      {vc:70,fz:0.025,ae:12,ap:25,dr:0.06,tap:6},
+
+al:      {vc:300,fz:0.06,ae:35,ap:100,dr:0.15,tap:25},
+
+steel:   {vc:150,fz:0.04,ae:25,ap:50,dr:0.12,tap:12},
+
+"303":   {vc:130,fz:0.035,ae:20,ap:40,dr:0.10,tap:10},
+
+"304":   {vc:100,fz:0.03,ae:15,ap:35,dr:0.08,tap:8},
+
+ti:      {vc:70,fz:0.025,ae:12,ap:25,dr:0.06,tap:6},
+
 inconel: {vc:40,fz:0.02,ae:10,ap:20,dr:0.05,tap:4}
+
 };
+
 
 function aggiorna(){
 
+
 const m=dati[document.getElementById("mat").value];
 
+
 document.getElementById("vc").value=m.vc;
+
 document.getElementById("fz").value=m.fz;
+
 document.getElementById("ae").value=m.ae;
+
 document.getElementById("ap").value=m.ap;
 
+
 }
+
 
 document.getElementById("mat").addEventListener("change",aggiorna);
 
+
 function calc(){
 
+
 const mat=document.getElementById("mat").value;
+
 const tool=document.getElementById("tool").value;
+
 const D=parseFloat(document.getElementById("d").value);
+
 const Z=parseInt(document.getElementById("z").value);
+
 const P=parseFloat(document.getElementById("pitch").value);
+
 const out=document.getElementById("out");
 
+
 if(!D||D<=0||!Z||Z<=0){
+
 out.innerHTML="Inserire diametro e taglienti validi.";
+
 return;
+
 }
+
 
 const m=dati[mat];
 
+
 let Vc=parseFloat(document.getElementById("vc").value);
+
 let fz=parseFloat(document.getElementById("fz").value);
+
 let ae=parseFloat(document.getElementById("ae").value)/100;
+
 let ap=parseFloat(document.getElementById("ap").value)/100;
 
+
 if(!Vc||Vc<=0){
+
 out.innerHTML="Inserire Vc valida.";
+
 return;
+
 }
 
+
 let rpm=0;
+
 let feed=0;
+
 let note="";
+
 
 if(tool==="drill"){
 
+
 Vc*=0.55;
+
 rpm=Math.round(1000*Vc/(Math.PI*D));
+
 feed=Math.round(rpm*m.dr);
+
 note="Avanzamento in mm/min.";
 
+
 }
+
 
 else if(tool==="tap"){
 
+
 Vc=m.tap;
+
 rpm=Math.round(1000*Vc/(Math.PI*D));
 
+
 if(!P||P<=0){
+
 out.innerHTML="Inserire un passo filetto valido.";
+
 return;
+
 }
+
 
 feed=Math.round(rpm*P);
+
 note="Avanzamento sincronizzato con passo.";
 
+
 }
+
 
 else if(tool==="center"){
 
+
 Vc*=0.4;
+
 rpm=Math.round(1000*Vc/(Math.PI*D));
+
 feed=Math.round(rpm*0.03);
+
 note="Avanzamento indicativo per centrino.";
 
+
 }
+
 
 else{
 
+
 if(tool==="thread"){
+
 Vc*=0.6;
+
 fz*=0.6;
+
 }
+
 
 if(tool==="chamfer"){
+
 Vc*=0.5;
+
 fz*=0.5;
+
 }
 
+
 rpm=Math.round(1000*Vc/(Math.PI*D));
+
 feed=Math.round(rpm*fz*Z);
+
 
 note="Avanzamento calcolato con fz × taglienti.";
 
+
 }
 
+
 const radiale=D*ae;
+
 const assiale=D*ap;
 
+
 let html=
+
 "<b>Materiale:</b> "+document.getElementById("mat").selectedOptions[0].text+"<br>"+
+
 "<b>Utensile:</b> "+document.getElementById("tool").selectedOptions[0].text+"<br>"+
+
 "<b>Vc:</b> "+Vc.toFixed(1)+" m/min<br>"+
+
 "<b>Giri mandrino:</b> "+rpm+" RPM<br>"+
+
 "<b>Avanzamento:</b> "+feed+" mm/min<br>";
+
 
 if(tool!=="drill"&&tool!=="tap"&&tool!=="center"){
 
+
 html+=
+
 "<b>fz:</b> "+fz.toFixed(3)+" mm/tagliente<br>"+
+
 "<b>Passata radiale:</b> "+radiale.toFixed(2)+" mm<br>"+
+
 "<b>Passata assiale:</b> "+assiale.toFixed(2)+" mm<br>";
 
+
 }
+
 
 html+="<hr><small>"+note+"</small>";
 
+
 out.innerHTML=html;
 
+
 }
+
 
 function copyResult(){
 
+
 const out=document.getElementById("out");
 
+
 if(out.innerText.includes("Inserisci")){
+
 return;
+
 }
+
 
 navigator.clipboard.writeText(out.innerText)
+
 .then(()=>alert("Risultati copiati"))
+
 .catch(()=>alert("Copia non disponibile"));
 
+
 }
+
 
 aggiorna();
 
+
 </script>
 
+
 </body>
+
 </html>
